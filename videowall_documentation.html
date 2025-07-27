@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Système Video Wall</title>
+    <style>
+        :root {
+            --primary-color: #4caf50;
+            --bg-dark: #1a1a1a;
+            --bg-section: #2a2a2a;
+            --bg-code: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #bbbbbb;
+            --border-color: #4a4a4a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--bg-section);
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+        }
+        
+        nav {
+            background: var(--bg-section);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        
+        nav h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        nav ul {
+            list-style: none;
+        }
+        
+        nav li {
+            margin-bottom: 10px;
+        }
+        
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        nav a:hover {
+            color: var(--primary-color);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .section {
+            background: var(--bg-section);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: var(--text-primary);
+            margin: 20px 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        h4 {
+            color: var(--text-primary);
+            margin: 15px 0 10px 0;
+            font-size: 1.2em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+        
+        code {
+            background: var(--bg-code);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: var(--primary-color);
+        }
+        
+        pre {
+            background: var(--bg-code);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-code);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .command-box {
+            background: #0a0a0a;
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .command-box::before {
+            content: '$';
+            color: var(--primary-color);
+            position: absolute;
+            left: 15px;
+        }
+        
+        .command-box code {
+            margin-left: 15px;
+            color: var(--text-primary);
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+            color: var(--text-secondary);
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: #2196F3;
+        }
+        
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #FFC107;
+        }
+        
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-code);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .badge-primary {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+        }
+        
+        .badge-secondary {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .architecture-diagram {
+            background: var(--bg-code);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .flow-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .flow-item {
+            background: var(--bg-section);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            margin: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .flow-arrow {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin: 0 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav {
+                position: static;
+            }
+            
+            .flow-chart {
+                flex-direction: column;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>W0nd3rW4ll</h1>
+            <p class="subtitle">Système de gestion de mur d'images multi-écrans</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <nav>
+            <h2>Table des matières</h2>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#licence">Licence</a></li>
+                <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+                <li><a href="#prerequis">Prérequis</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#utilisation">Utilisation</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#api">API REST</a></li>
+                <li><a href="#depannage">Dépannage</a></li>
+                <li><a href="#developpement">Développement</a></li>
+            </ul>
+        </nav>
+        
+        <section id="introduction" class="section">
+            <h2>Introduction</h2>
+            <p>W0nd3rW4ll est un système complet de gestion de mur d'images permettant de contrôler l'affichage de flux vidéo provenant de caméras IP sur plusieurs écrans. Le système est conçu pour être flexible, scalable et facile à utiliser.</p>
+            
+            <h3>Cas d'usage principaux</h3>
+            <ul>
+                <li>Centres de surveillance et de sécurité</li>
+                <li>Salles de contrôle industrielles</li>
+                <li>Centres de commandement</li>
+                <li>Affichage d'informations en temps réel</li>
+                <li>Surveillance multi-sites</li>
+            </ul>
+            
+            <div class="alert alert-info">
+                <strong>Note :</strong> Ce système est optimisé pour les caméras Axis mais peut être adapté pour d'autres marques grâce aux templates RTSP configurables.
+            </div>
+        </section>
+        
+        <section id="licence" class="section">
+            <h2>Licence</h2>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ USAGE NON-COMMERCIAL UNIQUEMENT</strong>
+            </div>
+            
+            <p>Ce logiciel est distribué sous une licence non-commerciale restrictive. Il est gratuit pour :</p>
+            <ul>
+                <li>Usage personnel et domestique</li>
+                <li>Usage éducatif et académique</li>
+                <li>Organisations à but non lucratif</li>
+                <li>Projets de recherche</li>
+            </ul>
+            
+            <h3>Utilisations interdites</h3>
+            <p>Les utilisations suivantes sont <strong>strictement interdites</strong> sans autorisation écrite préalable :</p>
+            <ul>
+                <li>Utilisation dans un environnement commercial ou d'entreprise</li>
+                <li>Intégration dans des produits ou services commerciaux</li>
+                <li>Vente du logiciel ou de services basés sur ce logiciel</li>
+                <li>Utilisation pour générer des revenus directs ou indirects</li>
+                <li>Utilisation par des sociétés de sécurité commerciales</li>
+            </ul>
+            
+            <div class="alert alert-info">
+                <strong>Pour toute demande d'utilisation commerciale</strong>, veuillez prendre contact via GitHub ou l'adresse email fournie dans le fichier LICENSE.
+            </div>
+            
+            <p>Consultez le fichier <code>LICENSE</code> pour les termes complets de la licence.</p>
+        </section>
+        
+        <section id="fonctionnalites" class="section">
+            <h2>Fonctionnalités</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎥 Gestion multi-caméras</h4>
+                    <p>Support de multiples caméras IP avec configuration flexible des flux RTSP et adaptation automatique de la qualité selon le layout.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🖥️ Affichage multi-écrans</h4>
+                    <p>Gestion d'un nombre illimité d'écrans avec layouts configurables (1x1, 2x2, 3x3) et détection automatique des murs d'images.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>📍 Interface drag & drop</h4>
+                    <p>Interface intuitive permettant de glisser-déposer les caméras sur les écrans et d'organiser visuellement la disposition des écrans.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>💾 Gestion des scènes</h4>
+                    <p>Sauvegarde et restauration de configurations complètes incluant les assignations de caméras et les positions d'écrans.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🔄 Mises à jour en temps réel</h4>
+                    <p>Communication WebSocket bidirectionnelle pour des changements instantanés sur tous les écrans connectés.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🎯 Détection de murs d'images</h4>
+                    <p>Identification automatique des groupes d'écrans formant un mur d'images 2x2 avec synchronisation des quadrants.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="prerequis" class="section">
+            <h2>Prérequis</h2>
+            
+            <h3>Système</h3>
+            <ul>
+                <li>Linux (Ubuntu/Debian), Raspberry Pi OS ou macOS</li>
+                <li>Python 3.11 ou supérieur</li>
+                <li>Connexion réseau stable</li>
+                <li>Accès aux caméras IP sur le réseau</li>
+            </ul>
+            
+            <h3>Matériel recommandé</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Composant</th>
+                        <th>Minimum</th>
+                        <th>Recommandé</th>
+                    </tr>
+                    <tr>
+                        <td>Processeur</td>
+                        <td>2 cores</td>
+                        <td>4 cores ou plus</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>2 GB</td>
+                        <td>4 GB ou plus</td>
+                    </tr>
+                    <tr>
+                        <td>Stockage</td>
+                        <td>1 GB</td>
+                        <td>5 GB (pour logs)</td>
+                    </tr>
+                    <tr>
+                        <td>Réseau</td>
+                        <td>100 Mbps</td>
+                        <td>1 Gbps</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+        
+        <section id="installation" class="section">
+            <h2>Installation</h2>
+            
+            <h3>Installation automatique</h3>
+            <p>Le script d'installation détecte automatiquement votre système d'exploitation et installe les dépendances nécessaires.</p>
+            
+            <div class="command-box">
+                <code>chmod +x install_script.sh</code>
+            </div>
+            <div class="command-box">
+                <code>./install_script.sh</code>
+            </div>
+            
+            <div class="alert alert-success">
+                <strong>Le script d'installation effectue les actions suivantes :</strong>
+                <ul>
+                    <li>Détection du système d'exploitation</li>
+                    <li>Installation de Python 3.11+ (si nécessaire)</li>
+                    <li>Installation des dépendances système</li>
+                    <li>Installation des packages Python requis</li>
+                    <li>Création de la structure de répertoires</li>
+                    <li>Configuration des permissions</li>
+                </ul>
+            </div>
+            
+            <h3>Installation manuelle</h3>
+            <p>Si vous préférez installer manuellement :</p>
+            
+            <h4>1. Installer les dépendances système</h4>
+            <p><strong>Sur Linux/Raspberry Pi :</strong></p>
+            <div class="command-box">
+                <code>sudo apt-get update</code>
+            </div>
+            <div class="command-box">
+                <code>sudo apt-get install python3 python3-pip git curl</code>
+            </div>
+            
+            <p><strong>Sur macOS :</strong></p>
+            <div class="command-box">
+                <code>brew install python@3.11 git curl</code>
+            </div>
+            
+            <h4>2. Installer les dépendances Python</h4>
+            <div class="command-box">
+                <code>pip3 install -r requirements.txt --break-system-packages</code>
+            </div>
+            
+            <h4>3. Créer les répertoires</h4>
+            <div class="command-box">
+                <code>mkdir -p cameras scenes templates logs</code>
+            </div>
+        </section>
+        
+        <section id="configuration" class="section">
+            <h2>Configuration</h2>
+            
+            <h3>Configuration des caméras</h3>
+            <p>Le fichier <code>cameras/cameras.json</code> contient la configuration de toutes les caméras. Voici la structure :</p>
+            
+            <pre><code>{
+    "cameras": [
+        {
+            "id": 1,
+            "name": "Entrée principale",
+            "brand": "Axis",
+            "model": "P3265-LVE",
+            "ip": "192.168.1.100",
+            "login": "root",
+            "password": "password",
+            "rtsp_template": "rtsp://{login}:{password}@{ip}/axis-media/media.amp?resolution={resolution}",
+            "stream_resolution": "640x360",
+            "stream_fps": 15,
+            "supported_resolutions": ["1920x1080", "1280x720", "960x540", "640x360"],
+            "zone": "Extérieur",
+            "gps": {
+                "latitude": 48.8566,
+                "longitude": 2.3522
+            }
+        }
+    ]
+}</code></pre>
+            
+            <h3>Templates RTSP</h3>
+            <p>Le système utilise des templates RTSP flexibles pour supporter différentes marques de caméras :</p>
+            
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Marque</th>
+                        <th>Template RTSP</th>
+                    </tr>
+                    <tr>
+                        <td>Axis</td>
+                        <td><code>rtsp://{login}:{password}@{ip}/axis-media/media.amp?resolution={resolution}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Hikvision</td>
+                        <td><code>rtsp://{login}:{password}@{ip}:554/Streaming/Channels/{channel}01</code></td>
+                    </tr>
+                    <tr>
+                        <td>Dahua</td>
+                        <td><code>rtsp://{login}:{password}@{ip}:554/cam/realmonitor?channel={channel}&subtype={stream}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Generic ONVIF</td>
+                        <td><code>rtsp://{login}:{password}@{ip}:554/stream{stream}</code></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3>Mise à jour automatique des résolutions</h3>
+            <p>Pour mettre à jour automatiquement les résolutions supportées par vos caméras :</p>
+            <div class="command-box">
+                <code>./update_resolutions.sh</code>
+            </div>
+            
+            <div class="alert alert-warning">
+                <strong>Important :</strong> Cette commande interroge directement chaque caméra pour récupérer ses résolutions 16:9 supportées. Assurez-vous que les caméras sont accessibles sur le réseau.
+            </div>
+        </section>
+        
+        <section id="utilisation" class="section">
+            <h2>Utilisation</h2>
+            
+            <h3>Démarrage du serveur</h3>
+            <div class="command-box">
+                <code>./start_server.sh</code>
+            </div>
+            
+            <p>Le serveur démarre sur le port 1982. L'interface web est accessible à :</p>
+            <div class="alert alert-success">
+                <strong>URL :</strong> <code>http://localhost:1982</code> ou <code>http://[ADRESSE_IP]:1982</code>
+            </div>
+            
+            <h3>Interface de contrôle</h3>
+            <p>L'interface est divisée en trois zones principales :</p>
+            
+            <h4>1. Barre latérale gauche</h4>
+            <ul>
+                <li><strong>Scènes sauvegardées :</strong> Gestion des configurations</li>
+                <li><strong>Caméras disponibles :</strong> Liste des caméras groupées par zone</li>
+                <li><strong>Écrans connectés :</strong> Liste des écrans actifs</li>
+            </ul>
+            
+            <h4>2. Zone de travail centrale</h4>
+            <ul>
+                <li>Visualisation de la disposition des écrans</li>
+                <li>Glisser-déposer pour organiser les écrans</li>
+                <li>Indicateurs visuels pour les murs d'images</li>
+            </ul>
+            
+            <h4>3. Contrôles</h4>
+            <ul>
+                <li><strong>Verrouillage :</strong> Empêche les modifications accidentelles</li>
+                <li><strong>Arrangement auto :</strong> Dispose automatiquement les écrans</li>
+                <li><strong>Réinitialiser :</strong> Remet les positions par défaut</li>
+            </ul>
+            
+            <h3>Workflow typique</h3>
+            <div class="flow-chart">
+                <div class="flow-item">Connecter les écrans</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Disposer les écrans</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Assigner les caméras</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Sauvegarder la scène</div>
+            </div>
+        </section>
+        
+        <section id="architecture" class="section">
+            <h2>Architecture</h2>
+            
+            <h3>Vue d'ensemble</h3>
+            <div class="architecture-diagram">
+                <pre style="color: var(--primary-color); background: transparent;">
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Caméras IP    │     │ Serveur Central │     │     Écrans      │
+│                 │     │                 │     │                 │
+│  ┌───────────┐  │     │  ┌───────────┐  │     │  ┌───────────┐  │
+│  │ Caméra 1  │──┼─────┼─►│           │  │     │  │  Écran 1  │  │
+│  └───────────┘  │     │  │   Flask   │  │     │  └───────────┘  │
+│  ┌───────────┐  │ RTSP│  │     +     │  │     │  ┌───────────┐  │
+│  │ Caméra 2  │──┼─────┼─►│ Socket.IO │◄─┼─────┼─►│  Écran 2  │  │
+│  └───────────┘  │     │  │           │  │ WS  │  └───────────┘  │
+│  ┌───────────┐  │     │  └───────────┘  │     │  ┌───────────┐  │
+│  │ Caméra N  │──┼─────┤        │        │     │  │  Écran N  │  │
+│  └───────────┘  │     │  ┌─────▼─────┐  │     │  └───────────┘  │
+└─────────────────┘     │  │  Storage  │  │     └─────────────────┘
+                        │  │  (JSON)   │  │
+                        │  └───────────┘  │
+                        └─────────────────┘
+                </pre>
+            </div>
+            
+            <h3>Composants principaux</h3>
+            
+            <h4>1. Serveur Central (W0nd3rW4ll_Server_Web.py)</h4>
+            <ul>
+                <li>Serveur Flask pour l'API REST</li>
+                <li>WebSocket via Socket.IO pour la communication temps réel</li>
+                <li>Gestion des configurations et des scènes</li>
+                <li>Détection automatique des murs d'images</li>
+            </ul>
+            
+            <h4>2. Interface Web (control.html)</h4>
+            <ul>
+                <li>Interface utilisateur responsive</li>
+                <li>Gestion drag & drop</li>
+                <li>Communication WebSocket avec le serveur</li>
+                <li>Sauvegarde locale des positions</li>
+            </ul>
+            
+            <h4>3. Gestionnaire de résolutions (update_camera_resolutions.py)</h4>
+            <ul>
+                <li>Interrogation automatique des caméras</li>
+                <li>Détection des résolutions 16:9</li>
+                <li>Mise à jour du fichier de configuration</li>
+            </ul>
+            
+            <h3>Structure des fichiers</h3>
+            <pre><code>W0nd3rW4ll/
+├── install_script.sh          # Script d'installation multi-plateformes
+├── start_server.sh            # Script de démarrage du serveur
+├── update_resolutions.sh      # Script de mise à jour des résolutions
+├── W0nd3rW4ll_Server_Web.py   # Serveur principal
+├── update_camera_resolutions.py # Gestionnaire de résolutions
+├── requirements.txt           # Dépendances Python
+├── cameras/
+│   └── cameras.json          # Configuration des caméras
+├── scenes/
+│   └── scenes.json           # Scènes sauvegardées
+├── templates/
+│   └── control.html          # Interface web
+└── logs/                     # Fichiers de log</code></pre>
+        </section>
+        
+        <section id="api" class="section">
+            <h2>API REST</h2>
+            
+            <h3>Endpoints disponibles</h3>
+            
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Méthode</th>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-primary">GET</span></td>
+                        <td><code>/api/cameras</code></td>
+                        <td>Liste toutes les caméras configurées</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-primary">GET</span></td>
+                        <td><code>/api/screens</code></td>
+                        <td>Liste tous les écrans connectés</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-secondary">POST</span></td>
+                        <td><code>/api/screen/{id}/config</code></td>
+                        <td>Met à jour la configuration d'un écran</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-primary">GET</span></td>
+                        <td><code>/api/rtsp/{camera_id}</code></td>
+                        <td>Obtient l'URL RTSP d'une caméra</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-primary">GET</span></td>
+                        <td><code>/api/scenes</code></td>
+                        <td>Liste toutes les scènes</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-secondary">POST</span></td>
+                        <td><code>/api/scenes</code></td>
+                        <td>Crée une nouvelle scène</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-secondary">POST</span></td>
+                        <td><code>/api/scenes/{id}/apply</code></td>
+                        <td>Applique une scène</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3>Exemples d'utilisation</h3>
+            
+            <h4>Obtenir la liste des caméras</h4>
+            <pre><code>curl http://localhost:1982/api/cameras</code></pre>
+            
+            <h4>Mettre à jour la configuration d'un écran</h4>
+            <pre><code>curl -X POST http://localhost:1982/api/screen/abc123/config \
+  -H "Content-Type: application/json" \
+  -d '{
+    "layout": "2x2",
+    "cameras": [1, 2, 3, 4]
+  }'</code></pre>
+        </section>
+        
+        <section id="depannage" class="section">
+            <h2>Dépannage</h2>
+            
+            <h3>Problèmes courants</h3>
+            
+            <h4>Le serveur ne démarre pas</h4>
+            <ul>
+                <li>Vérifier que le port 1982 n'est pas déjà utilisé</li>
+                <li>Vérifier les permissions sur les fichiers Python</li>
+                <li>Consulter les logs dans le répertoire <code>logs/</code></li>
+            </ul>
+            
+            <h4>Les caméras ne sont pas accessibles</h4>
+            <ul>
+                <li>Vérifier la connectivité réseau avec <code>ping [IP_CAMERA]</code></li>
+                <li>Vérifier les identifiants de connexion</li>
+                <li>Tester l'URL RTSP avec VLC : <code>vlc rtsp://...</code></li>
+            </ul>
+            
+            <h4>Les écrans ne se connectent pas</h4>
+            <ul>
+                <li>Vérifier que le client peut accéder au serveur</li>
+                <li>Vérifier les règles de pare-feu</li>
+                <li>S'assurer que WebSocket n'est pas bloqué</li>
+            </ul>
+            
+            <h3>Logs et débogage</h3>
+            <p>Pour activer les logs détaillés, modifier <code>LOG_LEVEL</code> dans le serveur :</p>
+            <pre><code>CONFIG = {
+    'LOG_LEVEL': logging.DEBUG,
+    ...
+}</code></pre>
+        </section>
+        
+        <section id="developpement" class="section">
+            <h2>Développement</h2>
+            
+            <h3>Ajouter le support d'une nouvelle marque de caméra</h3>
+            <p>Pour ajouter une nouvelle marque, il suffit d'ajouter le template RTSP approprié dans la configuration de la caméra :</p>
+            
+            <pre><code>{
+    "id": 10,
+    "name": "Nouvelle caméra",
+    "brand": "NouvelleMarque",
+    "rtsp_template": "rtsp://{login}:{password}@{ip}:{port}/stream{stream}",
+    "login": "admin",
+    "password": "password",
+    "ip": "192.168.1.200",
+    "port": 554,
+    "stream": 1
+}</code></pre>
+            
+            <h3>Personnaliser les layouts</h3>
+            <p>Pour ajouter de nouveaux layouts (ex: 4x4), modifier :</p>
+            
+            <ol>
+                <li>Dans <code>control.html</code> : Ajouter l'option dans le select</li>
+                <li>Dans <code>getLayoutDimensions()</code> : Ajouter les dimensions</li>
+                <li>Dans <code>RTSPManager</code> : Adapter la logique de sélection de résolution</li>
+            </ol>
+            
+            <h3>Structure des événements WebSocket</h3>
+            
+            <h4>Client → Serveur</h4>
+            <ul>
+                <li><code>register_screen</code> : Enregistrement d'un nouvel écran</li>
+                <li><code>heartbeat</code> : Maintien de la connexion</li>
+                <li><code>disconnect</code> : Déconnexion d'un écran</li>
+            </ul>
+            
+            <h4>Serveur → Client</h4>
+            <ul>
+                <li><code>screens_updated</code> : Liste mise à jour des écrans</li>
+                <li><code>config_update</code> : Nouvelle configuration pour un écran</li>
+            </ul>
+            
+            <div class="alert alert-info">
+                <strong>Contribution :</strong> Les contributions sont les bienvenues ! N'hésitez pas à soumettre des issues ou des pull requests sur GitHub. Notez que toute contribution sera soumise à la même licence non-commerciale.
+            </div>
+        </section>
+    </div>
+</body>
+</html>

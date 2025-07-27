@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Centre de Contrôle Video Wall</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: #2a2a2a;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #3a3a3a;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 5px 0;
+            margin-bottom: 10px;
+        }
+        
+        .section-header:hover h3 {
+            color: #4caf50;
+        }
+        
+        .section-toggle {
+            font-size: 12px;
+            transition: transform 0.3s;
+            color: #888;
+        }
+        
+        .sidebar-section.collapsed .section-toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .section-content {
+            display: block;
+        }
+        
+        .sidebar-section.collapsed .section-content {
+            display: none;
+        }
+        
+        .zone-group {
+            margin-bottom: 15px;
+        }
+        
+        .zone-header {
+            background: #3a3a3a;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .zone-header:hover {
+            background: #4a4a4a;
+        }
+        
+        .zone-toggle {
+            font-size: 11px;
+            transition: transform 0.3s;
+        }
+        
+        .zone-group.collapsed .zone-toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .zone-cameras {
+            display: block;
+        }
+        
+        .zone-group.collapsed .zone-cameras {
+            display: none;
+        }
+        
+        .camera-item, .screen-item, .scene-item {
+            background: #3a3a3a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: grab;
+            transition: all 0.3s;
+        }
+        
+        .camera-item:hover, .screen-item:hover {
+            background: #4a4a4a;
+            transform: translateX(5px);
+        }
+        
+        .scene-item {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scene-item:hover {
+            background: #4a4a4a;
+        }
+        
+        .scene-item.active {
+            background: #4a5a4a;
+            border: 1px solid #5a6a5a;
+        }
+        
+        .scene-info {
+            flex: 1;
+        }
+        
+        .scene-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .scene-description {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .scene-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .scene-button {
+            background: #4a4a4a;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .scene-button:hover {
+            background: #5a5a5a;
+        }
+        
+        .scene-button.apply {
+            background: #4caf50;
+        }
+        
+        .scene-button.apply:hover {
+            background: #5cbf60;
+        }
+        
+        .scene-button.delete {
+            background: #f44336;
+        }
+        
+        .scene-button.delete:hover {
+            background: #f66356;
+        }
+        
+        .camera-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .arrangement-controls {
+            background: #2a2a2a;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-button {
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-button:hover {
+            background: #4a4a4a;
+        }
+        
+        .control-button.primary {
+            background: #4caf50;
+            border-color: #5cbf60;
+        }
+        
+        .control-button.primary:hover {
+            background: #5cbf60;
+        }
+        
+        .control-button.locked {
+            background: #f44336;
+            border-color: #f66356;
+        }
+        
+        .control-button.locked:hover {
+            background: #f66356;
+        }
+        
+        .lock-icon {
+            font-size: 16px;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            background: #2a2a2a;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .canvas-container:not(.locked)::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(76, 175, 80, 0.05) 10px,
+                rgba(76, 175, 80, 0.05) 20px
+            );
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .screen-canvas {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .screen-display {
+            position: absolute;
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            cursor: move;
+            user-select: none;
+            transition: box-shadow 0.3s;
+            width: 400px;
+        }
+        
+        .screen-display.locked {
+            cursor: default;
+        }
+        
+        .screen-display.locked .screen-header {
+            cursor: default;
+        }
+        
+        .screen-display:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+        
+        .screen-display.dragging {
+            opacity: 0.8;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
+        
+        .screen-display.snapping {
+            border: 2px solid #4caf50;
+        }
+        
+        .screen-display.video-wall {
+            border: 3px solid #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+        
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: move;
+        }
+        
+        .screen-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-left: 10px;
+        }
+        
+        .video-wall-indicator {
+            background: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        
+        .screen-grid {
+            aspect-ratio: 16/9;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: grid;
+            gap: 2px;
+            padding: 2px;
+        }
+        
+        .grid-cell {
+            background: #3a3a3a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .grid-cell.drag-over {
+            background: #5a5a5a;
+            border: 2px dashed #fff;
+        }
+        
+        .grid-cell.has-camera {
+            background: #4a4a4a;
+            color: #fff;
+        }
+        
+        .remove-camera {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .grid-cell:hover .remove-camera {
+            opacity: 1;
+        }
+        
+        .layout-selector {
+            margin-bottom: 15px;
+        }
+        
+        .layout-selector select {
+            background: #3a3a3a;
+            color: white;
+            border: 1px solid #4a4a4a;
+            padding: 8px 12px;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .info-text {
+            color: #888;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .camera-zone {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .snap-guide {
+            position: absolute;
+            background: #4caf50;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .snap-guide.horizontal {
+            height: 2px;
+            left: 0;
+            right: 0;
+        }
+        
+        .snap-guide.vertical {
+            width: 2px;
+            top: 0;
+            bottom: 0;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background-color: #2a2a2a;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+        
+        .modal-close:hover {
+            color: #fff;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #bbb;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .add-scene-button {
+            width: 100%;
+            background: #4caf50;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .add-scene-button:hover {
+            background: #5cbf60;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .updating {
+            animation: pulse 1s infinite;
+        }
+        
+        .video-wall-status {
+            background: #3a3a3a;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .video-wall-status.active {
+            background: #4a5a4a;
+            border: 1px solid #4caf50;
+        }
+        
+        .video-wall-status-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .video-wall-status-text {
+            color: #888;
+        }
+        
+        .counter {
+            font-size: 12px;
+            color: #888;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <!-- Scènes en premier -->
+        <div class="sidebar-section" id="scenesSection">
+            <div class="section-header" onclick="toggleSection('scenesSection')">
+                <h3>Scènes Sauvegardées <span class="counter" id="sceneCount"></span></h3>
+                <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+                <button class="add-scene-button" onclick="showSaveSceneModal()">
+                    + Sauvegarder la configuration actuelle
+                </button>
+                <div class="scenes-list" id="scenesList">
+                    <div class="info-text">Aucune scène sauvegardée</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Caméras en deuxième -->
+        <div class="sidebar-section" id="camerasSection">
+            <div class="section-header" onclick="toggleSection('camerasSection')">
+                <h3>Caméras Disponibles <span class="counter" id="cameraCount"></span></h3>
+                <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="camera-zones" id="cameraZones">
+                    <div class="info-text">Chargement des caméras...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Écrans en dernier -->
+        <div class="sidebar-section" id="screensSection">
+            <div class="section-header" onclick="toggleSection('screensSection')">
+                <h3>Écrans Connectés <span class="counter" id="screenCount"></span></h3>
+                <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="screen-list" id="screenList">
+                    <div class="info-text">En attente de connexion des écrans...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1>Centre de Contrôle Video Wall</h1>
+        
+        <div class="video-wall-status" id="videoWallStatus" style="display: none;">
+            <div class="video-wall-status-title">Mode Mur d'Images</div>
+            <div class="video-wall-status-text" id="videoWallStatusText"></div>
+        </div>
+        
+        <div class="arrangement-controls">
+            <div class="info-text">
+                Glissez les écrans pour les disposer. Ils s'aligneront automatiquement.
+            </div>
+            <div class="control-buttons">
+                <button class="control-button" id="lockButton" onclick="toggleLock()">
+                    <span class="lock-icon">🔓</span>
+                    <span id="lockText">Déverrouillé</span>
+                </button>
+                <button class="control-button" onclick="autoArrange()">Arrangement auto</button>
+                <button class="control-button" onclick="resetPositions()">Réinitialiser</button>
+            </div>
+        </div>
+        
+        <div class="canvas-container" id="canvasContainer">
+            <div class="screen-canvas" id="screenCanvas">
+                <!-- Les écrans seront ajoutés ici dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour sauvegarder/éditer une scène -->
+    <div id="sceneModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Sauvegarder la configuration</h2>
+                <span class="modal-close" onclick="closeSceneModal()">&times;</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="sceneName">Nom de la scène</label>
+                <input type="text" id="sceneName" class="form-input" placeholder="Ex: Configuration jour">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="sceneDescription">Description (optionnel)</label>
+                <textarea id="sceneDescription" class="form-textarea" placeholder="Description de cette configuration..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="control-button" onclick="closeSceneModal()">Annuler</button>
+                <button class="control-button primary" onclick="saveScene()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let cameras = [];
+        let screens = {};
+        let scenes = [];
+        let draggedCamera = null;
+        let draggedScreen = null;
+        let screenPositions = {};
+        let currentSceneId = null;
+        let editingSceneId = null;
+        let camerasLoaded = false;
+        let isLocked = false;
+        let videoWallGroups = [];
+        
+        // Paramètres de magnétisme
+        const SNAP_THRESHOLD = 30;
+        const GRID_SIZE = 10;
+        
+        // Connexion Socket.IO
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+            if (!camerasLoaded) {
+                loadCameras();
+            }
+            loadScreens();
+            loadScenes();
+        });
+        
+        socket.on('screens_updated', (updatedScreens) => {
+            screens = {};
+            if (Array.isArray(updatedScreens)) {
+                updatedScreens.forEach(screen => {
+                    screens[screen.id] = screen;
+                });
+            } else {
+                screens = updatedScreens;
+            }
+            
+            if (camerasLoaded) {
+                const currentPositions = { ...screenPositions };
+                renderScreens();
+                updateCounts();
+                
+                Object.entries(currentPositions).forEach(([screenId, position]) => {
+                    const element = document.querySelector(`[data-screen-id="${screenId}"]`);
+                    if (element && position) {
+                        element.style.left = position.x + 'px';
+                        element.style.top = position.y + 'px';
+                        screenPositions[screenId] = position;
+                    }
+                });
+                
+                checkVideoWallGroups();
+            }
+        });
+        
+        // Gestion des sections pliables
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+        
+        function toggleZone(zoneElement) {
+            zoneElement.classList.toggle('collapsed');
+        }
+        
+        // Mise à jour des compteurs
+        function updateCounts() {
+            document.getElementById('cameraCount').textContent = `(${cameras.length})`;
+            document.getElementById('screenCount').textContent = `(${Object.keys(screens).length})`;
+            document.getElementById('sceneCount').textContent = `(${scenes.length})`;
+        }
+        
+        // Fonction de verrouillage/déverrouillage
+        function toggleLock() {
+            isLocked = !isLocked;
+            const lockButton = document.getElementById('lockButton');
+            const lockIcon = lockButton.querySelector('.lock-icon');
+            const lockText = document.getElementById('lockText');
+            const canvasContainer = document.getElementById('canvasContainer');
+            
+            if (isLocked) {
+                lockIcon.textContent = '🔒';
+                lockText.textContent = 'Verrouillé';
+                lockButton.classList.add('locked');
+                canvasContainer.classList.add('locked');
+                
+                document.querySelectorAll('.screen-display').forEach(screen => {
+                    screen.classList.add('locked');
+                });
+            } else {
+                lockIcon.textContent = '🔓';
+                lockText.textContent = 'Déverrouillé';
+                lockButton.classList.remove('locked');
+                canvasContainer.classList.remove('locked');
+                
+                document.querySelectorAll('.screen-display').forEach(screen => {
+                    screen.classList.remove('locked');
+                });
+            }
+        }
+        
+        // Vérification des groupes de mur d'images
+        async function checkVideoWallGroups() {
+            try {
+                const response = await fetch('/api/screens/positions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ positions: screenPositions })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    updateVideoWallDisplay(result.groups || 0);
+                }
+            } catch (error) {
+                console.error('Erreur vérification groupes:', error);
+            }
+        }
+        
+        function updateVideoWallDisplay(groupCount) {
+            const statusDiv = document.getElementById('videoWallStatus');
+            const statusText = document.getElementById('videoWallStatusText');
+            
+            document.querySelectorAll('.screen-display').forEach(screen => {
+                screen.classList.remove('video-wall');
+            });
+            
+            if (groupCount > 0) {
+                statusDiv.style.display = 'block';
+                statusDiv.classList.add('active');
+                statusText.textContent = `${groupCount} groupe(s) de mur d'images détecté(s)`;
+                
+                Object.values(screens).forEach(screen => {
+                    if (screen.layout === '1x1' && screen.cameras && screen.cameras.length > 0) {
+                        const element = document.querySelector(`[data-screen-id="${screen.id}"]`);
+                        if (element) {
+                            const sameCamera = Object.values(screens).filter(s => 
+                                s.layout === '1x1' && 
+                                s.cameras && 
+                                s.cameras[0] === screen.cameras[0]
+                            );
+                            
+                            if (sameCamera.length === 4) {
+                                element.classList.add('video-wall');
+                            }
+                        }
+                    }
+                });
+            } else {
+                statusDiv.style.display = 'none';
+                statusDiv.classList.remove('active');
+            }
+        }
+        
+        // Chargement des caméras
+        async function loadCameras() {
+            if (camerasLoaded) return;
+            
+            try {
+                const response = await fetch('/api/cameras');
+                cameras = await response.json();
+                camerasLoaded = true;
+                renderCamerasByZone();
+                updateCounts();
+            } catch (error) {
+                console.error('Erreur chargement caméras:', error);
+            }
+        }
+        
+        // Affichage des caméras groupées par zone
+        function renderCamerasByZone() {
+            const cameraZones = document.getElementById('cameraZones');
+            
+            // Grouper les caméras par zone
+            const zones = {};
+            cameras.forEach(cam => {
+                const zone = cam.zone || 'Sans zone';
+                if (!zones[zone]) {
+                    zones[zone] = [];
+                }
+                zones[zone].push(cam);
+            });
+            
+            // Afficher les zones
+            cameraZones.innerHTML = Object.entries(zones).map(([zone, cams]) => `
+                <div class="zone-group" data-zone="${zone}">
+                    <div class="zone-header" onclick="toggleZone(this.parentElement)">
+                        <span>${zone} (${cams.length})</span>
+                        <span class="zone-toggle">▼</span>
+                    </div>
+                    <div class="zone-cameras">
+                        ${cams.map(cam => `
+                            <div class="camera-item" draggable="true" data-camera-id="${cam.id}">
+                                <div><strong>${cam.name}</strong></div>
+                                <div class="camera-zone">${cam.model} | ${cam.ip}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Ajouter les événements drag & drop
+            document.querySelectorAll('.camera-item').forEach(item => {
+                item.addEventListener('dragstart', handleCameraDragStart);
+                item.addEventListener('dragend', handleCameraDragEnd);
+            });
+        }
+        
+        // Chargement des écrans
+        async function loadScreens() {
+            try {
+                const response = await fetch('/api/screens');
+                const screenData = await response.json();
+                screens = {};
+                
+                if (Array.isArray(screenData)) {
+                    screenData.forEach(screen => {
+                        screens[screen.id] = screen;
+                    });
+                } else {
+                    screens = screenData;
+                }
+                
+                loadScreenPositions();
+                renderScreens();
+                updateCounts();
+                
+                setTimeout(checkVideoWallGroups, 500);
+            } catch (error) {
+                console.error('Erreur chargement écrans:', error);
+            }
+        }
+        
+        // Chargement des scènes
+        async function loadScenes() {
+            try {
+                const response = await fetch('/api/scenes');
+                scenes = await response.json();
+                renderScenesList();
+                updateCounts();
+            } catch (error) {
+                console.error('Erreur chargement scènes:', error);
+            }
+        }
+        
+        // Affichage de la liste des scènes
+        function renderScenesList() {
+            const scenesList = document.getElementById('scenesList');
+            
+            if (scenes.length === 0) {
+                scenesList.innerHTML = '<div class="info-text">Aucune scène sauvegardée</div>';
+                return;
+            }
+            
+            scenesList.innerHTML = scenes.map(scene => `
+                <div class="scene-item ${scene.id === currentSceneId ? 'active' : ''}" data-scene-id="${scene.id}">
+                    <div class="scene-info">
+                        <div class="scene-name">${scene.name}</div>
+                        ${scene.description ? `<div class="scene-description">${scene.description}</div>` : ''}
+                    </div>
+                    <div class="scene-actions">
+                        <button class="scene-button apply" onclick="applyScene('${scene.id}')" title="Appliquer">▶</button>
+                        <button class="scene-button" onclick="editScene('${scene.id}')" title="Éditer">✏</button>
+                        <button class="scene-button delete" onclick="deleteScene('${scene.id}')" title="Supprimer">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Affichage des écrans
+        function renderScreens() {
+            const screenList = document.getElementById('screenList');
+            const screenCanvas = document.getElementById('screenCanvas');
+            
+            const screenArray = Object.values(screens);
+            
+            if (screenArray.length === 0) {
+                screenList.innerHTML = '<div class="info-text">Aucun écran connecté</div>';
+                screenCanvas.innerHTML = '<div class="info-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Les écrans connectés apparaîtront ici...</div>';
+                return;
+            }
+            
+            // Liste dans la sidebar
+            screenList.innerHTML = screenArray.map(screen => `
+                <div class="screen-item">
+                    <div class="status-indicator">
+                        <span>${screen.name}</span>
+                        <span class="screen-status"></span>
+                    </div>
+                    <div class="info-text">${screen.ip}</div>
+                </div>
+            `).join('');
+            
+            // Canvas principal
+            const existingElements = {};
+            document.querySelectorAll('.screen-display').forEach(el => {
+                const id = el.dataset.screenId;
+                existingElements[id] = {
+                    element: el,
+                    x: parseInt(el.style.left),
+                    y: parseInt(el.style.top)
+                };
+            });
+            
+            screenCanvas.innerHTML = '';
+            
+            screenArray.forEach((screen, index) => {
+                let position;
+                if (existingElements[screen.id]) {
+                    position = {
+                        x: existingElements[screen.id].x,
+                        y: existingElements[screen.id].y
+                    };
+                } else {
+                    position = screenPositions[screen.id] || getDefaultPosition(index);
+                }
+                createScreenElement(screen, position);
+            });
+        }
+        
+        function getDefaultPosition(index) {
+            const cols = 2;
+            const spacing = 420;
+            const x = (index % cols) * spacing + 50;
+            const y = Math.floor(index / cols) * 300 + 50;
+            return { x, y };
+        }
+        
+        function createScreenElement(screen, position) {
+            const screenCanvas = document.getElementById('screenCanvas');
+            const [rows, cols] = getLayoutDimensions(screen.layout);
+            
+            const screenDiv = document.createElement('div');
+            screenDiv.className = 'screen-display' + (isLocked ? ' locked' : '');
+            screenDiv.dataset.screenId = screen.id;
+            screenDiv.style.left = position.x + 'px';
+            screenDiv.style.top = position.y + 'px';
+            
+            screenDiv.innerHTML = `
+                <div class="screen-header">
+                    <h3>${screen.name} <span class="screen-status"></span></h3>
+                    <div class="layout-selector">
+                        <select onchange="changeLayout('${screen.id}', this.value)" onclick="event.stopPropagation()">
+                            <option value="1x1" ${screen.layout === '1x1' ? 'selected' : ''}>1x1</option>
+                            <option value="2x2" ${screen.layout === '2x2' ? 'selected' : ''}>2x2</option>
+                            <option value="3x3" ${screen.layout === '3x3' ? 'selected' : ''}>3x3</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="screen-grid" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr);">
+                    ${generateGridCells(screen, rows * cols)}
+                </div>
+                <div class="info-text">IP: ${screen.ip} | ${isLocked ? 'Verrouillé' : 'Glissez pour déplacer'}</div>
+            `;
+            
+            screenCanvas.appendChild(screenDiv);
+            
+            makeScreenDraggable(screenDiv);
+            
+            screenDiv.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.addEventListener('dragover', handleDragOver);
+                cell.addEventListener('drop', handleDrop);
+                cell.addEventListener('dragleave', handleDragLeave);
+            });
+            
+            screenPositions[screen.id] = position;
+        }
+        
+        function makeScreenDraggable(element) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            const header = element.querySelector('.screen-header');
+            
+            header.addEventListener('mousedown', startDragging);
+            
+            function startDragging(e) {
+                if (e.target.tagName === 'SELECT' || e.target.tagName === 'OPTION' || isLocked) {
+                    return;
+                }
+                
+                isDragging = true;
+                draggedScreen = element;
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                const rect = element.getBoundingClientRect();
+                const canvas = document.getElementById('screenCanvas').getBoundingClientRect();
+                
+                initialX = rect.left - canvas.left;
+                initialY = rect.top - canvas.top;
+                
+                element.classList.add('dragging');
+                
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDragging);
+                
+                e.preventDefault();
+            }
+            
+            function drag(e) {
+                if (!isDragging) return;
+                
+                e.preventDefault();
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                let newX = initialX + dx;
+                let newY = initialY + dy;
+                
+                const snapResult = checkSnapping(element, newX, newY);
+                newX = snapResult.x;
+                newY = snapResult.y;
+                
+                const canvas = document.getElementById('screenCanvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                const elementRect = element.getBoundingClientRect();
+                
+                newX = Math.max(0, Math.min(newX, canvasRect.width - elementRect.width));
+                newY = Math.max(0, Math.min(newY, canvasRect.height - elementRect.height));
+                
+                element.style.left = newX + 'px';
+                element.style.top = newY + 'px';
+                
+                updateSnapGuides(snapResult.guides);
+            }
+            
+            function stopDragging() {
+                isDragging = false;
+                element.classList.remove('dragging');
+                
+                const screenId = element.dataset.screenId;
+                screenPositions[screenId] = {
+                    x: parseInt(element.style.left),
+                    y: parseInt(element.style.top)
+                };
+                saveScreenPositions();
+                
+                checkVideoWallGroups();
+                
+                clearSnapGuides();
+                
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', stopDragging);
+            }
+        }
+        
+        function checkSnapping(element, x, y) {
+            const result = { x, y, guides: [] };
+            const screens = document.querySelectorAll('.screen-display');
+            const elementRect = {
+                left: x,
+                top: y,
+                right: x + element.offsetWidth,
+                bottom: y + element.offsetHeight,
+                centerX: x + element.offsetWidth / 2,
+                centerY: y + element.offsetHeight / 2
+            };
+            
+            screens.forEach(screen => {
+                if (screen === element) return;
+                
+                const rect = {
+                    left: parseInt(screen.style.left),
+                    top: parseInt(screen.style.top),
+                    right: parseInt(screen.style.left) + screen.offsetWidth,
+                    bottom: parseInt(screen.style.top) + screen.offsetHeight,
+                    centerX: parseInt(screen.style.left) + screen.offsetWidth / 2,
+                    centerY: parseInt(screen.style.top) + screen.offsetHeight / 2
+                };
+                
+                // Magnétisme horizontal
+                if (Math.abs(elementRect.left - rect.left) < SNAP_THRESHOLD) {
+                    result.x = rect.left;
+                    result.guides.push({ type: 'vertical', position: rect.left });
+                }
+                if (Math.abs(elementRect.right - rect.right) < SNAP_THRESHOLD) {
+                    result.x = rect.right - element.offsetWidth;
+                    result.guides.push({ type: 'vertical', position: rect.right });
+                }
+                if (Math.abs(elementRect.left - rect.right) < SNAP_THRESHOLD) {
+                    result.x = rect.right;
+                    result.guides.push({ type: 'vertical', position: rect.right });
+                }
+                if (Math.abs(elementRect.right - rect.left) < SNAP_THRESHOLD) {
+                    result.x = rect.left - element.offsetWidth;
+                    result.guides.push({ type: 'vertical', position: rect.left });
+                }
+                if (Math.abs(elementRect.centerX - rect.centerX) < SNAP_THRESHOLD) {
+                    result.x = rect.centerX - element.offsetWidth / 2;
+                    result.guides.push({ type: 'vertical', position: rect.centerX });
+                }
+                
+                // Magnétisme vertical
+                if (Math.abs(elementRect.top - rect.top) < SNAP_THRESHOLD) {
+                    result.y = rect.top;
+                    result.guides.push({ type: 'horizontal', position: rect.top });
+                }
+                if (Math.abs(elementRect.bottom - rect.bottom) < SNAP_THRESHOLD) {
+                    result.y = rect.bottom - element.offsetHeight;
+                    result.guides.push({ type: 'horizontal', position: rect.bottom });
+                }
+                if (Math.abs(elementRect.top - rect.bottom) < SNAP_THRESHOLD) {
+                    result.y = rect.bottom;
+                    result.guides.push({ type: 'horizontal', position: rect.bottom });
+                }
+                if (Math.abs(elementRect.bottom - rect.top) < SNAP_THRESHOLD) {
+                    result.y = rect.top - element.offsetHeight;
+                    result.guides.push({ type: 'horizontal', position: rect.top });
+                }
+                if (Math.abs(elementRect.centerY - rect.centerY) < SNAP_THRESHOLD) {
+                    result.y = rect.centerY - element.offsetHeight / 2;
+                    result.guides.push({ type: 'horizontal', position: rect.centerY });
+                }
+            });
+            
+            result.x = Math.round(result.x / GRID_SIZE) * GRID_SIZE;
+            result.y = Math.round(result.y / GRID_SIZE) * GRID_SIZE;
+            
+            return result;
+        }
+        
+        function updateSnapGuides(guides) {
+            clearSnapGuides();
+            
+            const canvas = document.getElementById('screenCanvas');
+            
+            guides.forEach(guide => {
+                const line = document.createElement('div');
+                line.className = `snap-guide ${guide.type}`;
+                
+                if (guide.type === 'vertical') {
+                    line.style.left = guide.position + 'px';
+                } else {
+                    line.style.top = guide.position + 'px';
+                }
+                
+                canvas.appendChild(line);
+            });
+        }
+        
+        function clearSnapGuides() {
+            document.querySelectorAll('.snap-guide').forEach(guide => guide.remove());
+        }
+        
+        function getLayoutDimensions(layout) {
+            const layouts = {
+                '1x1': [1, 1],
+                '2x2': [2, 2],
+                '3x3': [3, 3]
+            };
+            return layouts[layout] || [2, 2];
+        }
+        
+        function generateGridCells(screen, cellCount) {
+            let cells = '';
+            for (let i = 0; i < cellCount; i++) {
+                const camera = screen.cameras && screen.cameras[i] ? screen.cameras[i] : null;
+                if (camera) {
+                    const cameraInfo = cameras.find(c => c.id === camera);
+                    cells += `
+                        <div class="grid-cell has-camera" data-cell-index="${i}">
+                            ${cameraInfo ? cameraInfo.name : `Caméra ${camera}`}
+                            <button class="remove-camera" onclick="removeCamera('${screen.id}', ${i})">×</button>
+                        </div>
+                    `;
+                } else {
+                    cells += `<div class="grid-cell" data-cell-index="${i}">Vide</div>`;
+                }
+            }
+            return cells;
+        }
+        
+        // Gestion du drag & drop des caméras
+        function handleCameraDragStart(e) {
+            draggedCamera = parseInt(e.target.dataset.cameraId);
+            e.target.classList.add('dragging');
+        }
+        
+        function handleCameraDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        
+        async function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const screenDisplay = e.currentTarget.closest('.screen-display');
+            const screenId = screenDisplay.dataset.screenId;
+            const cellIndex = parseInt(e.currentTarget.dataset.cellIndex);
+            const screen = screens[screenId];
+            
+            if (draggedCamera && screen) {
+                const newCameras = [...(screen.cameras || [])];
+                const [rows, cols] = getLayoutDimensions(screen.layout);
+                const totalCells = rows * cols;
+                
+                while (newCameras.length < totalCells) {
+                    newCameras.push(null);
+                }
+                
+                // Stocker l'ancienne caméra
+                const oldCameraId = newCameras[cellIndex];
+                const isReplacement = oldCameraId !== null && oldCameraId !== draggedCamera;
+                
+                // Mise à jour immédiate de l'état local
+                newCameras[cellIndex] = draggedCamera;
+                screens[screenId].cameras = newCameras;
+                
+                // Rafraîchir immédiatement l'affichage
+                const gridElement = screenDisplay.querySelector('.screen-grid');
+                gridElement.innerHTML = generateGridCells(screens[screenId], totalCells);
+                
+                // Réattacher les événements drag & drop
+                gridElement.querySelectorAll('.grid-cell').forEach(cell => {
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('drop', handleDrop);
+                    cell.addEventListener('dragleave', handleDragLeave);
+                });
+                
+                screenDisplay.classList.add('updating');
+                
+                // Si on remplace une caméra, forcer la mise à jour en 2 temps
+                try {
+                    if (isReplacement) {
+                        console.log(`Remplacement détecté: ${oldCameraId} -> ${draggedCamera}`);
+                        
+                        // Étape 1: Vider la cellule
+                        const tempCameras = [...newCameras];
+                        tempCameras[cellIndex] = null;
+                        
+                        await fetch(`/api/screen/${screenId}/config`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ layout: screen.layout, cameras: tempCameras })
+                        });
+                        
+                        // Attendre un peu
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+                    
+                    // Étape 2: Ajouter la nouvelle caméra
+                    const response = await fetch(`/api/screen/${screenId}/config`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ layout: screen.layout, cameras: newCameras })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Erreur serveur');
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur mise à jour configuration:', error);
+                    // En cas d'erreur, recharger tout
+                    await loadScreens();
+                } finally {
+                    screenDisplay.classList.remove('updating');
+                    setTimeout(checkVideoWallGroups, 500);
+                }
+            }
+        }
+        
+        async function changeLayout(screenId, newLayout) {
+            const screen = screens[screenId];
+            if (screen) {
+                // Adapter le tableau de caméras au nouveau layout
+                const [rows, cols] = getLayoutDimensions(newLayout);
+                const newSize = rows * cols;
+                const currentCameras = screen.cameras || [];
+                
+                // Créer un nouveau tableau de la bonne taille
+                const newCameras = [];
+                for (let i = 0; i < newSize; i++) {
+                    newCameras[i] = i < currentCameras.length ? currentCameras[i] : null;
+                }
+                
+                await updateScreenConfig(screenId, newLayout, newCameras);
+            }
+        }
+        
+        async function removeCamera(screenId, cellIndex) {
+            const screen = screens[screenId];
+            if (screen) {
+                const newCameras = [...screen.cameras];
+                newCameras[cellIndex] = null;
+                
+                // Mise à jour immédiate de l'état local
+                screens[screenId].cameras = newCameras;
+                
+                // Rafraîchir l'affichage
+                const screenDisplay = document.querySelector(`[data-screen-id="${screenId}"]`);
+                if (screenDisplay) {
+                    const [rows, cols] = getLayoutDimensions(screen.layout);
+                    const gridElement = screenDisplay.querySelector('.screen-grid');
+                    gridElement.innerHTML = generateGridCells(screens[screenId], rows * cols);
+                    
+                    // Réattacher les événements
+                    gridElement.querySelectorAll('.grid-cell').forEach(cell => {
+                        cell.addEventListener('dragover', handleDragOver);
+                        cell.addEventListener('drop', handleDrop);
+                        cell.addEventListener('dragleave', handleDragLeave);
+                    });
+                }
+                
+                // Envoyer au serveur
+                await updateScreenConfig(screenId, screen.layout, newCameras);
+            }
+        }
+        
+        async function updateScreenConfig(screenId, layout, cameras) {
+            try {
+                const response = await fetch(`/api/screen/${screenId}/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ layout, cameras })
+                });
+                
+                if (response.ok) {
+                    screens[screenId].layout = layout;
+                    screens[screenId].cameras = cameras;
+                    
+                    const screenElement = document.querySelector(`[data-screen-id="${screenId}"]`);
+                    if (screenElement) {
+                        const [rows, cols] = getLayoutDimensions(layout);
+                        
+                        // Mettre à jour le select du layout
+                        const layoutSelect = screenElement.querySelector('select');
+                        if (layoutSelect && layoutSelect.value !== layout) {
+                            layoutSelect.value = layout;
+                        }
+                        
+                        // Mettre à jour la grille
+                        const gridElement = screenElement.querySelector('.screen-grid');
+                        gridElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                        gridElement.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                        gridElement.innerHTML = generateGridCells(screens[screenId], rows * cols);
+                        
+                        // Réattacher les événements
+                        gridElement.querySelectorAll('.grid-cell').forEach(cell => {
+                            cell.addEventListener('dragover', handleDragOver);
+                            cell.addEventListener('drop', handleDrop);
+                            cell.addEventListener('dragleave', handleDragLeave);
+                        });
+                    }
+                    
+                    setTimeout(checkVideoWallGroups, 500);
+                }
+            } catch (error) {
+                console.error('Erreur mise à jour configuration:', error);
+            }
+        }
+        
+        function autoArrange() {
+            const screenArray = Object.values(screens);
+            const cols = Math.ceil(Math.sqrt(screenArray.length));
+            const spacing = 420;
+            
+            screenArray.forEach((screen, index) => {
+                const x = (index % cols) * spacing + 50;
+                const y = Math.floor(index / cols) * 300 + 50;
+                
+                const element = document.querySelector(`[data-screen-id="${screen.id}"]`);
+                if (element) {
+                    element.style.left = x + 'px';
+                    element.style.top = y + 'px';
+                    
+                    screenPositions[screen.id] = { x, y };
+                }
+            });
+            
+            saveScreenPositions();
+            checkVideoWallGroups();
+        }
+        
+        function resetPositions() {
+            screenPositions = {};
+            localStorage.removeItem('wallScreenPositions');
+            renderScreens();
+            checkVideoWallGroups();
+        }
+        
+        function saveScreenPositions() {
+            localStorage.setItem('wallScreenPositions', JSON.stringify(screenPositions));
+        }
+        
+        function loadScreenPositions() {
+            const saved = localStorage.getItem('wallScreenPositions');
+            if (saved) {
+                screenPositions = JSON.parse(saved);
+            }
+        }
+        
+        // Fonctions pour la gestion des scènes
+        function showSaveSceneModal(sceneId = null) {
+            const modal = document.getElementById('sceneModal');
+            const title = document.getElementById('modalTitle');
+            const nameInput = document.getElementById('sceneName');
+            const descInput = document.getElementById('sceneDescription');
+            
+            if (sceneId) {
+                editingSceneId = sceneId;
+                const scene = scenes.find(s => s.id === sceneId);
+                if (scene) {
+                    title.textContent = 'Éditer la scène';
+                    nameInput.value = scene.name;
+                    descInput.value = scene.description || '';
+                }
+            } else {
+                editingSceneId = null;
+                title.textContent = 'Sauvegarder la configuration';
+                nameInput.value = `Configuration ${new Date().toLocaleDateString('fr-FR')}`;
+                descInput.value = '';
+            }
+            
+            modal.style.display = 'block';
+            nameInput.focus();
+        }
+        
+        function closeSceneModal() {
+            const modal = document.getElementById('sceneModal');
+            modal.style.display = 'none';
+            editingSceneId = null;
+        }
+        
+        async function saveScene() {
+            const nameInput = document.getElementById('sceneName');
+            const descInput = document.getElementById('sceneDescription');
+            
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert('Veuillez entrer un nom pour la scène');
+                return;
+            }
+            
+            try {
+                if (editingSceneId) {
+                    const response = await fetch(`/api/scenes/${editingSceneId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            description: descInput.value.trim()
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        closeSceneModal();
+                        loadScenes();
+                    }
+                } else {
+                    const response = await fetch('/api/scenes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            description: descInput.value.trim(),
+                            screen_positions: screenPositions
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        closeSceneModal();
+                        loadScenes();
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde scène:', error);
+                alert('Erreur lors de la sauvegarde de la scène');
+            }
+        }
+        
+        async function applyScene(sceneId) {
+            try {
+                const response = await fetch(`/api/scenes/${sceneId}/apply`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    currentSceneId = sceneId;
+                    
+                    if (!camerasLoaded) {
+                        await loadCameras();
+                    }
+                    
+                    const positionsToApply = result.screen_positions || {};
+                    
+                    setTimeout(async () => {
+                        await loadScreens();
+                        
+                        setTimeout(() => {
+                            if (Object.keys(positionsToApply).length > 0) {
+                                console.log('Application des positions de la scène:', positionsToApply);
+                                
+                                Object.entries(positionsToApply).forEach(([screenId, position]) => {
+                                    const element = document.querySelector(`[data-screen-id="${screenId}"]`);
+                                    if (element && position) {
+                                        element.style.left = position.x + 'px';
+                                        element.style.top = position.y + 'px';
+                                        screenPositions[screenId] = position;
+                                        console.log(`Position appliquée pour ${screenId}: x=${position.x}, y=${position.y}`);
+                                    } else {
+                                        console.log(`Écran ${screenId} non trouvé dans le DOM`);
+                                    }
+                                });
+                                
+                                saveScreenPositions();
+                                checkVideoWallGroups();
+                            }
+                        }, 100);
+                        
+                        renderScenesList();
+                        
+                        const scene = scenes.find(s => s.id === sceneId);
+                        if (scene) {
+                            let message = `Scène "${scene.name}" appliquée`;
+                            
+                            if (result.unmatched_screens && result.unmatched_screens.length > 0) {
+                                message += `\n\nAttention : ${result.unmatched_screens.length} écran(s) de la scène non trouvé(s) :\n- ${result.unmatched_screens.join('\n- ')}`;
+                                alert(message);
+                            } else {
+                                console.log(message);
+                            }
+                            
+                            const screens = document.querySelectorAll('.screen-display');
+                            screens.forEach(screen => {
+                                screen.classList.add('updating');
+                                setTimeout(() => {
+                                    screen.classList.remove('updating');
+                                }, 1000);
+                            });
+                        }
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('Erreur application scène:', error);
+                alert('Erreur lors de l\'application de la scène');
+            }
+        }
+        
+        function editScene(sceneId) {
+            showSaveSceneModal(sceneId);
+        }
+        
+        async function deleteScene(sceneId) {
+            const scene = scenes.find(s => s.id === sceneId);
+            if (!scene) return;
+            
+            if (confirm(`Êtes-vous sûr de vouloir supprimer la scène "${scene.name}" ?`)) {
+                try {
+                    const response = await fetch(`/api/scenes/${sceneId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        if (currentSceneId === sceneId) {
+                            currentSceneId = null;
+                        }
+                        loadScenes();
+                    }
+                } catch (error) {
+                    console.error('Erreur suppression scène:', error);
+                    alert('Erreur lors de la suppression de la scène');
+                }
+            }
+        }
+        
+        // Fermer la modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('sceneModal');
+            if (event.target === modal) {
+                closeSceneModal();
+            }
+        }
+    </script>
+</body>
+</html>

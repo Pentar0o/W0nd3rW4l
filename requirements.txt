@@ -1,0 +1,21 @@
+# Serveur Web Flask et WebSocket
+flask==3.0.0
+flask-socketio==5.3.5
+python-socketio==5.10.0
+
+# Client HTTP pour interroger les caméras
+requests==2.31.0
+urllib3==2.0.7
+
+# Dépendances additionnelles pour Flask-SocketIO
+python-engineio==4.8.0
+simple-websocket==1.0.0
+
+# Utilitaires
+Werkzeug==3.0.1
+
+# Pour les événements asynchrones (optionnel mais recommandé)
+eventlet==0.33.3
+
+# Pour la compatibilité avec certains systèmes
+netifaces==0.11.0

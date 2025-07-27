@@ -1,0 +1,37 @@
+Licence Non-Commerciale W0nd3rW4ll
+
+Copyright (c) 2025 W0nd3rW4ll Project
+
+La permission est accordée, gratuitement, à toute personne obtenant une copie
+de ce logiciel et des fichiers de documentation associés (le "Logiciel"), 
+d'utiliser le Logiciel sans restriction, y compris sans limitation les droits
+d'utiliser, copier, modifier, fusionner, publier et distribuer des copies du
+Logiciel, et de permettre aux personnes auxquelles le Logiciel est fourni de
+le faire, SOUS RÉSERVE des conditions suivantes :
+
+1. USAGE NON-COMMERCIAL UNIQUEMENT : Ce logiciel ne peut être utilisé qu'à des
+   fins non-commerciales. Toute utilisation commerciale, incluant mais ne se
+   limitant pas à :
+   - La vente du logiciel ou de services basés sur ce logiciel
+   - L'utilisation du logiciel dans un environnement commercial ou d'entreprise
+   - L'intégration du logiciel dans des produits ou services commerciaux
+   - L'utilisation du logiciel pour générer des revenus directs ou indirects
+   EST STRICTEMENT INTERDITE sans autorisation écrite préalable du détenteur
+   des droits d'auteur.
+
+2. L'avis de copyright ci-dessus et cet avis de permission doivent être inclus
+   dans toutes les copies ou portions substantielles du Logiciel.
+
+3. Toute distribution du Logiciel ou de travaux dérivés doit conserver cette
+   même restriction d'usage non-commercial.
+
+LE LOGICIEL EST FOURNI "TEL QUEL", SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU
+IMPLICITE, Y COMPRIS MAIS SANS S'Y LIMITER LES GARANTIES DE QUALITÉ MARCHANDE,
+D'ADÉQUATION À UN USAGE PARTICULIER ET D'ABSENCE DE CONTREFAÇON. EN AUCUN CAS
+LES AUTEURS OU LES DÉTENTEURS DU COPYRIGHT NE SERONT RESPONSABLES DE TOUTE
+RÉCLAMATION, DOMMAGES OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION
+CONTRACTUELLE, DÉLICTUELLE OU AUTRE, DÉCOULANT DE, OU EN CONNEXION AVEC LE
+LOGICIEL OU L'UTILISATION OU D'AUTRES TRANSACTIONS DANS LE LOGICIEL.
+
+Pour toute demande d'utilisation commerciale, veuillez contacter :
+pentar0o@outlook.com
