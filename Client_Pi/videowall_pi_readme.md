@@ -237,33 +237,6 @@ sudo journalctl -u videowall-client -f
 # Logs système
 tail -f /var/log/syslog | grep videowall
 ```
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! 
-
-1. Fork le projet
-2. Créez votre branche (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-## 🙏 Remerciements
-
-- Équipe Raspberry Pi Foundation
-- Communauté OpenCV
-- Contributeurs du projet
-
-## 📞 Support
-
-- 📧 Email : support@videowall.com
-- 🐛 Issues : [GitHub Issues](https://github.com/yourusername/w0nd3rw4ll-pi-client/issues)
-- 📖 Documentation complète : [Wiki](https://github.com/yourusername/w0nd3rw4ll-pi-client/wiki)
-
 ---
 
 Made with ❤️ for Raspberry Pi enthusiasts
