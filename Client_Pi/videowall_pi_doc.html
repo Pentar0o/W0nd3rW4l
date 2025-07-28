@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Client Video Wall pour Raspberry Pi</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h1 {
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            margin-top: 40px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        pre {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .toc {
+            background: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .command {
+            background: #2d3436;
+            color: #74b9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📺 Documentation Client Video Wall pour Raspberry Pi</h1>
+        
+        <div class="info">
+            <strong>Version:</strong> 1.0<br>
+            <strong>Compatible:</strong> Raspberry Pi 3, 4, 5 | Raspberry Pi OS (32/64-bit)
+        </div>
+
+        <div class="toc">
+            <h3>Table des matières</h3>
+            <ul>
+                <li><a href="#introduction">1. Introduction</a></li>
+                <li><a href="#requirements">2. Prérequis</a></li>
+                <li><a href="#installation">3. Installation</a></li>
+                <li><a href="#configuration">4. Configuration</a></li>
+                <li><a href="#usage">5. Utilisation</a></li>
+                <li><a href="#features">6. Fonctionnalités</a></li>
+                <li><a href="#troubleshooting">7. Dépannage</a></li>
+                <li><a href="#optimization">8. Optimisations</a></li>
+                <li><a href="#api">9. API et Communication</a></li>
+            </ul>
+        </div>
+
+        <h2 id="introduction">1. Introduction</h2>
+        <p>Le client Video Wall pour Raspberry Pi est un système d'affichage de flux vidéo RTSP permettant de transformer un Raspberry Pi en écran de surveillance professionnel. Il s'intègre avec le serveur central W0nd3rW4ll pour une gestion centralisée.</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🎥 Multi-caméras</h3>
+                <p>Support de layouts 1x1, 2x2 et 3x3 avec adaptation automatique de la qualité</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔄 Temps réel</h3>
+                <p>Streaming optimisé avec gestion intelligente des buffers et reconnexion automatique</p>
+            </div>
+            <div class="feature-card">
+                <h3>🖥️ Mode mur d'images</h3>
+                <p>Support natif des configurations 2x2 avec détection automatique des quadrants</p>
+            </div>
+        </div>
+
+        <h2 id="requirements">2. Prérequis</h2>
+        
+        <h3>Matériel</h3>
+        <table>
+            <tr>
+                <th>Composant</th>
+                <th>Minimum</th>
+                <th>Recommandé</th>
+            </tr>
+            <tr>
+                <td>Modèle Raspberry Pi</td>
+                <td>Pi 3B+</td>
+                <td>Pi 4 (2GB+) ou Pi 5</td>
+            </tr>
+            <tr>
+                <td>Carte SD</td>
+                <td>16 GB</td>
+                <td>32 GB Class 10</td>
+            </tr>
+            <tr>
+                <td>Alimentation</td>
+                <td>5V 2.5A</td>
+                <td>5V 3A (USB-C pour Pi 4/5)</td>
+            </tr>
+            <tr>
+                <td>Réseau</td>
+                <td>Wi-Fi ou Ethernet</td>
+                <td>Ethernet Gigabit</td>
+            </tr>
+        </table>
+
+        <h3>Logiciel</h3>
+        <ul>
+            <li>Raspberry Pi OS (Bookworm ou ultérieur)</li>
+            <li>Python 3.11+</li>
+            <li>Accès réseau au serveur central</li>
+            <li>Caméras RTSP configurées et accessibles</li>
+        </ul>
+
+        <h2 id="installation">3. Installation</h2>
+
+        <h3>Installation rapide</h3>
+        <div class="command">
+chmod +x install_pi_client_script.sh
+./install_pi_client_script.sh
+        </div>
+
+        <h3>Installation manuelle</h3>
+        <p>Si le script automatique échoue, voici les étapes manuelles :</p>
+
+        <h4>1. Mise à jour du système</h4>
+        <pre><code>sudo apt-get update
+sudo apt-get upgrade -y</code></pre>
+
+        <h4>2. Installation des dépendances</h4>
+        <pre><code>sudo apt-get install -y \
+    python3 python3-pip python3-dev \
+    libopencv-dev python3-opencv \
+    libatlas-base-dev \
+    gstreamer1.0-* \
+    ffmpeg libavcodec-extra</code></pre>
+
+        <h4>3. Installation des modules Python</h4>
+        <pre><code>pip3 install --break-system-packages \
+    python-socketio[client]==5.10.0 \
+    numpy==1.24.3 \
+    requests==2.31.0</code></pre>
+
+        <h4>4. Optimisations GPU</h4>
+        <pre><code>echo "gpu_mem=256" | sudo tee -a /boot/config.txt
+echo "dtoverlay=vc4-kms-v3d" | sudo tee -a /boot/config.txt
+sudo reboot</code></pre>
+
+        <h2 id="configuration">4. Configuration</h2>
+
+        <h3>Configuration du serveur</h3>
+        <div class="command">
+./configure_server.sh http://IP_SERVEUR:1982
+        </div>
+
+        <p>Exemple :</p>
+        <div class="command">
+./configure_server.sh http://192.168.1.100:1982
+        </div>
+
+        <h3>Fichier de configuration</h3>
+        <p>Le fichier <code>pi_client_config.json</code> contient tous les paramètres :</p>
+
+        <table>
+            <tr>
+                <th>Paramètre</th>
+                <th>Description</th>
+                <th>Valeur par défaut</th>
+            </tr>
+            <tr>
+                <td>SERVER_URL</td>
+                <td>URL du serveur central</td>
+                <td>http://localhost:1982</td>
+            </tr>
+            <tr>
+                <td>DEBUG_MODE</td>
+                <td>Mode debug (fenêtre non plein écran)</td>
+                <td>false</td>
+            </tr>
+            <tr>
+                <td>LOG_LEVEL</td>
+                <td>Niveau de log (DEBUG, INFO, WARNING, ERROR)</td>
+                <td>INFO</td>
+            </tr>
+            <tr>
+                <td>TARGET_FPS</td>
+                <td>FPS cible pour l'affichage</td>
+                <td>25</td>
+            </tr>
+            <tr>
+                <td>MAX_FRAME_AGE</td>
+                <td>Âge max d'une frame en secondes</td>
+                <td>0.2</td>
+            </tr>
+            <tr>
+                <td>RECONNECT_INTERVAL</td>
+                <td>Intervalle de reconnexion (secondes)</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>HEARTBEAT_INTERVAL</td>
+                <td>Intervalle heartbeat (secondes)</td>
+                <td>30</td>
+            </tr>
+        </table>
+
+        <h2 id="usage">5. Utilisation</h2>
+
+        <h3>Démarrage manuel</h3>
+        <div class="command">
+./start_pi_client.sh
+        </div>
+
+        <h3>Mode debug</h3>
+        <div class="command">
+./start_pi_client.sh --debug --loglevel DEBUG
+        </div>
+
+        <h3>Démarrage automatique</h3>
+        <pre><code># Activer le service
+sudo systemctl enable videowall-client
+
+# Démarrer le service
+sudo systemctl start videowall-client
+
+# Vérifier le statut
+sudo systemctl status videowall-client
+
+# Voir les logs
+sudo journalctl -u videowall-client -f</code></pre>
+
+        <h3>Commandes clavier</h3>
+        <table>
+            <tr>
+                <th>Touche</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>ESC</td>
+                <td>Quitter l'application</td>
+            </tr>
+            <tr>
+                <td>R</td>
+                <td>Réinitialiser le cache des frames</td>
+            </tr>
+            <tr>
+                <td>F</td>
+                <td>Basculer plein écran (mode debug uniquement)</td>
+            </tr>
+        </table>
+
+        <h2 id="features">6. Fonctionnalités</h2>
+
+        <h3>Layouts supportés</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Layout 1x1</h3>
+                <p>Affichage plein écran d'une seule caméra en haute qualité (jusqu'à 1080p)</p>
+            </div>
+            <div class="feature-card">
+                <h3>Layout 2x2</h3>
+                <p>Grille de 4 caméras optimisée pour 720p par flux</p>
+            </div>
+            <div class="feature-card">
+                <h3>Layout 3x3</h3>
+                <p>Grille de 9 caméras avec résolution adaptative</p>
+            </div>
+        </div>
+
+        <h3>Mode mur d'images</h3>
+        <p>Détection automatique des configurations 2x2 d'écrans affichant la même caméra pour créer un affichage géant.</p>
+
+        <h3>Gestion intelligente des flux</h3>
+        <ul>
+            <li>Adaptation automatique de la résolution selon le layout</li>
+            <li>Skip de frames intelligent pour maintenir la fluidité</li>
+            <li>Reconnexion automatique en cas de perte</li>
+            <li>Cache des dernières frames valides</li>
+        </ul>
+
+        <h2 id="troubleshooting">7. Dépannage</h2>
+
+        <h3>Problèmes courants</h3>
+
+        <div class="warning">
+            <h4>Erreur: "Impossible d'ouvrir le flux"</h4>
+            <ol>
+                <li>Vérifier l'URL RTSP avec VLC : <code>vlc rtsp://...</code></li>
+                <li>Vérifier la connectivité réseau : <code>ping IP_CAMERA</code></li>
+                <li>Vérifier les credentials dans cameras.json sur le serveur</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <h4>Erreur: "OpenCV non trouvé"</h4>
+            <pre><code>sudo apt-get install python3-opencv
+pip3 install opencv-python --break-system-packages</code></pre>
+        </div>
+
+        <div class="warning">
+            <h4>Performance dégradée</h4>
+            <ol>
+                <li>Vérifier la température : <code>vcgencmd measure_temp</code></li>
+                <li>Augmenter la mémoire GPU : <code>gpu_mem=256</code> dans /boot/config.txt</li>
+                <li>Réduire le TARGET_FPS dans la configuration</li>
+                <li>Utiliser Ethernet plutôt que Wi-Fi</li>
+            </ol>
+        </div>
+
+        <h3>Tests de diagnostic</h3>
+
+        <h4>Test de connexion au serveur</h4>
+        <pre><code>curl http://IP_SERVEUR:1982/api/status</code></pre>
+
+        <h4>Test RTSP simple</h4>
+        <pre><code>ffprobe rtsp://user:pass@IP_CAMERA/stream</code></pre>
+
+        <h4>Test OpenCV</h4>
+        <pre><code>python3 -c "import cv2; print(cv2.__version__)"</code></pre>
+
+        <h2 id="optimization">8. Optimisations</h2>
+
+        <h3>Optimisations réseau</h3>
+        <ul>
+            <li>Utiliser Ethernet Gigabit pour les installations critiques</li>
+            <li>Configurer des VLANs séparés pour le trafic vidéo</li>
+            <li>Limiter la bande passante par flux si nécessaire</li>
+        </ul>
+
+        <h3>Optimisations Raspberry Pi</h3>
+        <table>
+            <tr>
+                <th>Paramètre</th>
+                <th>Fichier</th>
+                <th>Valeur recommandée</th>
+            </tr>
+            <tr>
+                <td>gpu_mem</td>
+                <td>/boot/config.txt</td>
+                <td>256 (ou 512 pour Pi 4/5)</td>
+            </tr>
+            <tr>
+                <td>over_voltage</td>
+                <td>/boot/config.txt</td>
+                <td>2 (avec refroidissement)</td>
+            </tr>
+            <tr>
+                <td>arm_freq</td>
+                <td>/boot/config.txt</td>
+                <td>1500 (Pi 3) / 2000 (Pi 4)</td>
+            </tr>
+        </table>
+
+        <div class="warning">
+            <strong>Attention :</strong> L'overclocking nécessite un refroidissement adéquat !
+        </div>
+
+        <h3>Optimisations système</h3>
+        <pre><code># Désactiver les services inutiles
+sudo systemctl disable bluetooth
+sudo systemctl disable avahi-daemon
+
+# Monter /tmp en RAM
+echo "tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0" | sudo tee -a /etc/fstab
+
+# Réduire le swappiness
+echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf</code></pre>
+
+        <h2 id="api">9. API et Communication</h2>
+
+        <h3>Communication Socket.IO</h3>
+        <p>Le client communique avec le serveur via Socket.IO sur les événements suivants :</p>
+
+        <h4>Événements émis par le client</h4>
+        <table>
+            <tr>
+                <th>Événement</th>
+                <th>Description</th>
+                <th>Données</th>
+            </tr>
+            <tr>
+                <td>register_screen</td>
+                <td>Enregistrement initial</td>
+                <td>ip, name, version, capabilities</td>
+            </tr>
+            <tr>
+                <td>heartbeat</td>
+                <td>Signal de vie</td>
+                <td>-</td>
+            </tr>
+        </table>
+
+        <h4>Événements reçus par le client</h4>
+        <table>
+            <tr>
+                <th>Événement</th>
+                <th>Description</th>
+                <th>Données</th>
+            </tr>
+            <tr>
+                <td>config_update</td>
+                <td>Nouvelle configuration</td>
+                <td>layout, cameras, video_wall_mode, quadrant</td>
+            </tr>
+            <tr>
+                <td>disconnect</td>
+                <td>Déconnexion serveur</td>
+                <td>-</td>
+            </tr>
+        </table>
+
+        <h3>API REST utilisée</h3>
+        <table>
+            <tr>
+                <th>Endpoint</th>
+                <th>Méthode</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>/api/cameras</td>
+                <td>GET</td>
+                <td>Liste des caméras</td>
+            </tr>
+            <tr>
+                <td>/api/rtsp/{id}</td>
+                <td>GET</td>
+                <td>URL RTSP d'une caméra</td>
+            </tr>
+        </table>
+
+        <div class="success">
+            <h3>📚 Ressources supplémentaires</h3>
+            <ul>
+                <li><a href="https://github.com/votre-repo">Code source sur GitHub</a></li>
+                <li><a href="#" onclick="alert('Documentation serveur non disponible')">Documentation du serveur</a></li>
+                <li>Support : support@videowall.com</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

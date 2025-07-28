@@ -1,0 +1,9 @@
+# Socket.IO pour la communication
+python-socketio[client]==5.10.0
+
+# OpenCV est installé via apt
+# opencv-python==4.8.1.78
+
+# Autres dépendances
+numpy==1.24.3
+requests==2.31.0

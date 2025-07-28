@@ -1,0 +1,20 @@
+{
+    "SERVER_URL": "http://10.0.0.95:1982",
+    "DEBUG_MODE": false,
+    "LOG_LEVEL": "INFO",
+    "TARGET_FPS": 25,
+    "MAX_FRAME_AGE": 0.2,
+    "RECONNECT_INTERVAL": 10,
+    "HEARTBEAT_INTERVAL": 30,
+    "OPENCV_BACKEND": 128,
+    "COMMENTS": {
+        "SERVER_URL": "URL du serveur central Video Wall",
+        "DEBUG_MODE": "Mode debug - fen\u00eatre non plein \u00e9cran si true",
+        "LOG_LEVEL": "Niveau de log: DEBUG, INFO, WARNING, ERROR",
+        "TARGET_FPS": "FPS cible pour l'affichage (25-30 recommand\u00e9)",
+        "MAX_FRAME_AGE": "\u00c2ge maximum d'une frame en secondes avant d'\u00eatre consid\u00e9r\u00e9e obsol\u00e8te",
+        "RECONNECT_INTERVAL": "Intervalle en secondes entre les tentatives de reconnexion",
+        "HEARTBEAT_INTERVAL": "Intervalle en secondes entre les heartbeats",
+        "OPENCV_BACKEND": "Backend OpenCV: 128=FFMPEG, 200=V4L2, 1400=GSTREAMER"
+    }
+}
